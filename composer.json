@@ -1,0 +1,20 @@
+{
+  "name": "thecodingmachine/drupal-service-provider-bridge",
+  "description": "This Drupal 8 module provides a bridge to include container-interop/service-provider service providers into your Drupal project.",
+  "type": "drupal-module",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "David Négrier",
+      "email": "d.negrier@thecodingmachine.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.0",
+    "thecodingmachine/service-provider-bridge-bundle": "^0.3",
+    "drupal/core": "~8.0"
+  },
+  "extra": {
+    "installer-name": "service_provider"
+  }
+}

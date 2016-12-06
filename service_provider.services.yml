@@ -1,0 +1,12 @@
+services:
+  puli_factory:
+    class:      Puli\GeneratedPuliFactory
+
+  puli_repository:
+    class:      'Puli\Repository\Api\ResourceRepository'
+    factory:    ['@puli_factory', createRepository]
+
+  puli_discovery:
+    class:      'Puli\Discovery\Api\Discovery'
+    factory:    ['@puli_factory', createDiscovery]
+    arguments:  ['@puli_repository']
