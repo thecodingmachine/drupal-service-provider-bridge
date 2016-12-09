@@ -14,6 +14,7 @@ use TheCodingMachine\Interop\ServiceProviderBridgeBundle\Exception\InvalidArgume
 use TheCodingMachine\Interop\ServiceProviderBridgeBundle\RegistryProviderInterface;
 use TheCodingMachine\Interop\ServiceProviderBridgeBundle\ServiceProviderCompilationPass;
 use TheCodingMachine\ServiceProvider\Registry;
+use TheCodingMachine\ServiceProvider\RegistryInterface;
 
 /**
  * The default service provider loaded by the service_provider module (hence the stupid name :) )
@@ -40,7 +41,7 @@ class ServiceProviderServiceProvider implements ServiceProviderInterface, Regist
 
     /**
      * @param SymfonyContainerInterface $container
-     * @return Registry
+     * @return RegistryInterface
      * @throws InvalidArgumentException
      */
     public function getRegistry(SymfonyContainerInterface $container)
@@ -66,7 +67,7 @@ class ServiceProviderServiceProvider implements ServiceProviderInterface, Regist
         }
 
         // In parallel, let's merge the registry:
-        $registry = new Registry($serviceProviders, $discovery);
+        $registry = new DrupalServiceProviderRegistry($serviceProviders, $discovery);
         return $registry;
     }
 }

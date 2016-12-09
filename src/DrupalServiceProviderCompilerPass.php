@@ -9,7 +9,6 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
-use TheCodingMachine\ServiceProvider\Registry;
 
 class DrupalServiceProviderCompilerPass implements CompilerPassInterface
 {
@@ -35,7 +34,7 @@ class DrupalServiceProviderCompilerPass implements CompilerPassInterface
             $serviceProviders = [];
         }
 
-        $definition = new Definition(Registry::class);
+        $definition = new Definition(DrupalServiceProviderRegistry::class);
         $definition->addArgument($serviceProviders);
         if ($puli) {
             $definition->addArgument(new Reference('puli_discovery'));
