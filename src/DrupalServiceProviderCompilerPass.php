@@ -26,8 +26,8 @@ class DrupalServiceProviderCompilerPass implements CompilerPassInterface
         $container->setDefinition('interop_service_provider_acclimated_container', $definition);
 
         // Let's override the registry definition
-        if (file_exists(__DIR__.'/../../../service-providers.php')) {
-            $file = require __DIR__.'/../../../service-providers.php';
+        if (file_exists(__DIR__.'/../../../../service-providers.php')) {
+            $file = require __DIR__.'/../../../../service-providers.php';
             $puli = $file['puli'] ?? true;
             $serviceProviders = $file['service-providers'] ?? [];
         } else {

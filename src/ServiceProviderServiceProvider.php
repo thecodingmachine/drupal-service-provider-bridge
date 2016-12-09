@@ -46,8 +46,8 @@ class ServiceProviderServiceProvider implements ServiceProviderInterface, Regist
     public function getRegistry(SymfonyContainerInterface $container)
     {
 
-        if (file_exists(__DIR__.'/../../../service-providers.php')) {
-            $file = require __DIR__.'/../../../service-providers.php';
+        if (file_exists(__DIR__.'/../../../../service-providers.php')) {
+            $file = require __DIR__.'/../../../../service-providers.php';
             $puli = $file['puli'] ?? true;
             $serviceProviders = $file['service-providers'] ?? [];
         } else {
