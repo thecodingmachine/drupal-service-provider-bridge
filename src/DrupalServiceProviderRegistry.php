@@ -181,8 +181,14 @@ class DrupalServiceProviderRegistry implements RegistryInterface
             } else {
                 continue;
             }
-            if (strpos($className, 'Drupal\\' === 0) && !class_exists($className)) {
+            if (strpos($className, 'Drupal\\') === 0 && !class_exists($className)) {
                 unset($this->lazyArray[$offset]);
+                // Because Drupal can use a APCu cache for its classloader, a call to class_exists($className) can be cached if it returns false
+                // That can lead to problems if we enable a module and suddenly, the call is supposed to return true, but false is still returned.
+                // To avoid this, we simply purge the APCu cache.
+                if (function_exists('apcu_fetch')) {
+                    apcu_clear_cache();
+                }
             }
         }
     }
