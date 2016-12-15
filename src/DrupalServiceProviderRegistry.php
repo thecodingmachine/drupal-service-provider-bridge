@@ -3,6 +3,8 @@
 
 namespace Drupal\service_provider;
 
+use Composer\Autoload\ClassLoader;
+use Drupal\Component\ClassFinder\ClassFinder;
 use Interop\Container\ContainerInterface;
 use Interop\Container\ServiceProvider;
 use Puli\Discovery\Api\Discovery;
@@ -162,6 +164,20 @@ class DrupalServiceProviderRegistry implements RegistryInterface
     private $filteringDone = false;
 
     /**
+     * A clone of the composer classloader that will be screwed by its internal cache.
+     *
+     * @var ClassLoader
+     */
+    private static $clonedAutoloader;
+
+    private function preprendAutoloader()
+    {
+        $autoloader = require DRUPAL_ROOT.'/autoload.php';
+        self::$clonedAutoloader = clone $autoloader;
+        self::$clonedAutoloader->register(true);
+    }
+
+    /**
      * If a service provider name starts with \Drupal, we allow the class name to not exist.
      * Why? Because it might be in a disabled module (in this case, the class loader will not be able to access the class).
      */
@@ -173,6 +189,8 @@ class DrupalServiceProviderRegistry implements RegistryInterface
 
         $this->filteringDone = true;
 
+        $this->preprendAutoloader();
+
         foreach ($this->lazyArray as $offset => $entry) {
             if (is_string($entry)) {
                 $className = $entry;
@@ -183,12 +201,6 @@ class DrupalServiceProviderRegistry implements RegistryInterface
             }
             if (strpos($className, 'Drupal\\') === 0 && !class_exists($className)) {
                 unset($this->lazyArray[$offset]);
-                // Because Drupal can use a APCu cache for its classloader, a call to class_exists($className) can be cached if it returns false
-                // That can lead to problems if we enable a module and suddenly, the call is supposed to return true, but false is still returned.
-                // To avoid this, we simply purge the APCu cache.
-                if (function_exists('apcu_fetch')) {
-                    apcu_clear_cache();
-                }
             }
         }
     }
@@ -309,7 +321,17 @@ class DrupalServiceProviderRegistry implements RegistryInterface
      */
     public function valid()
     {
-        return $this->offsetExists($this->position);
+        $isValid = $this->offsetExists($this->position);
+
+        if ($isValid === false) {
+            // Ok, we ended iterating the array. The prepended autoloader cache is now completely screwed up.
+            // Let's remove this autoloader copy we made.
+            // (note: this is one of the worst hacks of my life :) )
+            //self::$clonedAutoloader->register(true);
+            self::$clonedAutoloader->unregister();
+        }
+
+        return $isValid;
     }
 
     /**
